@@ -1,5 +1,7 @@
 import math
+from decimal import Decimal, getcontext
 
+getcontext().prec = 30
 
 class Vector(object):
 
@@ -7,7 +9,7 @@ class Vector(object):
         try:
             if not coordinates:
                 raise ValueError
-            self.coordinates = tuple(coordinates)
+            self.coordinates = tuple([Decimal(x) for x in coordinates])
             self.dimension = len(coordinates)
 
         except ValueError:
@@ -38,19 +40,24 @@ class Vector(object):
         else:
             print('Two vectors must have the same dimensions!')
 
-    def __mul__(self, scale):
+    def __mul__(self, scalar):
         '''scalling vectors'''
-        out = [x * scale for x in self.coordinates]
+        out = [x * Decimal(scalar) for x in self.coordinates]
+        return self.__class__(out)
+
+    def times_scalar(self,scalar):
+        '''scalling vectors'''
+        out = [x * Decimal(scalar) for x in self.coordinates]
         return self.__class__(out)
 
     def magnitude(self):
         '''calculate the magnitude of vectors'''
-        out = math.sqrt(sum(x**2 for x in self.coordinates))
+        out = Decimal(math.sqrt(sum(x**2 for x in self.coordinates)))
         return out
 
-    def __truediv__(self, scale):
+    def __truediv__(self, scalar):
         try:
-            out = [x / scale for x in self.coordinates]
+            out = [x / Decimal(scalar) for x in self.coordinates]
             return self.__class__(out)
         except ZeroDivisionError:
             raise Exception('Cannot divided by zero!')
@@ -70,26 +77,26 @@ class Vector(object):
     def angle(self, v, mode='rad'):
         '''calculate the angle between vector self and vector v'''
         try:
-            out = math.acos(self.dot_product(v) /
-                            (self.magnitude() * v.magnitude())) % (2 * math.pi)
+            out = Decimal(math.acos(max(min(self.dot_product(
+                v) / (self.magnitude() * v.magnitude()), 1), -1)) % (2 * math.pi))
             if mode == 'rad':
                 return out
             else:
-                return out / math.pi * 180
+                return out / Decimal(math.pi * 180)
         except ZeroDivisionError:
             raise Exception('Vectors cannot be zero!')
 
-    def is_zero(self, threshold=1e-10):
+    def is_zero(self, tolerance=1e-10):
         '''judge the vector is 0 or not'''
-        return abs(self.magnitude()) < threshold
+        return abs(self.magnitude()) < tolerance
 
-    def is_orthogonal_to(self, v, threshold=1e-10):
+    def is_orthogonal_to(self, v, tolerance=1e-10):
         '''judge vector self is orthogonal to vector v or not'''
-        return abs(self.dot_product(v)) < threshold
+        return abs(self.dot_product(v)) < tolerance
 
-    def is_parallel_to(self, v):
+    def is_parallel_to(self, v, tolerance=1e-6):
         '''judge vector self is parallel to vector v or not'''
-        return self.is_zero() or v.is_zero() or self.angle(v) == math.pi or self.angle(v) == 0
+        return self.is_zero() or v.is_zero() or abs(self.angle(v) - Decimal(math.pi)) < tolerance or abs(self.angle(v)) < tolerance
 
     def projection_on(self, v):
         '''calculate the prejection of self onto v'''
@@ -109,7 +116,8 @@ class Vector(object):
         except ValueError as e:
             msg = str(e)
             if msg == 'need more than 2 values to unpack':
-                self_embedded_in_threeDimension = Vector(self.coordinates + ('0',))
+                self_embedded_in_threeDimension = Vector(
+                    self.coordinates + ('0',))
                 v_embedded_in_threeDimension = Vector(v.coordinates + ('0',))
                 return self_embedded_in_threeDimension.cross_product(v_embedded_in_threeDimension)
             elif(msg == 'too many values to unpack' or msg == 'need more than 1 value to unpack'):
@@ -120,11 +128,11 @@ class Vector(object):
     def parallelogram_spanned_with(self, v):
         '''calculate the area of parallelogram spanned by vector self and vector v'''
         # return self.cross_product(v).magnitude()
-        return self.magnitude() * v.magnitude() * math.sin(self.angle(v))
+        return self.magnitude() * v.magnitude() * Decimal(math.sin(self.angle(v)))
 
     def triangle_spanned_with(self, v):
         '''calculate the area of triangle spanned by vector self and vectro v'''
-        return 0.5 * self.parallelogram_spanned_with(v)
+        return Decimal(0.5) * self.parallelogram_spanned_with(v)
 
 if __name__ == '__main__':
     v1 = Vector([8.218, -9.341])
