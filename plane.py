@@ -65,7 +65,7 @@ class Plane(object):
 
             return output
 
-        n = self.normal_vector
+        n = self.normal_vector.coordinates
 
         try:
             initial_index = Plane.first_nonzero_index(n)
@@ -99,6 +99,8 @@ class Plane(object):
     def __eq__(self, p):
         if not self.is_paralle_to(p):
             return False
+        elif self.basepoint == None and p.basepoint == None and self.constant_term == p.constant_term:
+            return True
         else:
             base_vector = self.basepoint - p.basepoint
             return base_vector.is_orthogonal_to(self.normal_vector)

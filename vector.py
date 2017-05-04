@@ -22,7 +22,10 @@ class Vector(object):
         return 'Vector: {}'.format(self.coordinates)
 
     def __eq__(self, v):
-        return self.coordinates == v.coordinates
+        if self and v:
+            return self.coordinates == v.coordinates
+        else:
+            return self.coordinates == None and v.coordinates == None
 
     def __add__(self, v):
         ''' calculate vector a plus vector b'''
