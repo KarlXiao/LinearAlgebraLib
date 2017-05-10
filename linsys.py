@@ -3,7 +3,8 @@ from copy import deepcopy
 
 from vector import Vector
 from plane import Plane
-
+from para import Parameterization
+from hyperplane import Hyperplane
 getcontext().prec = 30
 
 
@@ -12,6 +13,7 @@ class LinearSystem(object):
     ALL_PLANES_MUST_BE_IN_SAME_DIM_MSG = 'All planes in the system should live in the same dimension'
     NO_SOLUTIONS_MSG = 'No solutions'
     INF_SOLUTIONS_MSG = 'Infinitely many solutions'
+    INF_SOLUTIONS = False
 
     def __init__(self, planes):
         try:
@@ -109,21 +111,61 @@ class LinearSystem(object):
                     scalar = Decimal(
                         1) / Decimal(rref.planes[row_idx].normal_vector.coordinates[indices[row_idx]])
                     rref.multiply_coefficient_and_row(scalar, row_idx)
+        if indices[0] != -1:
+            scalar = Decimal(
+                1) / Decimal(rref.planes[0].normal_vector.coordinates[indices[0]])
+            rref.multiply_coefficient_and_row(scalar, 0)
         return rref
 
-    def GaussianEliminationSolution(self):
+    def GaussianEliminationSolution(self, esp=1e-10):
         solution = self.compute_rref()
         indices = solution.indices_of_first_nonzero_terms_in_each_row()
-        for row in range(len(solution))[::-1]:
-            if sum(solution.planes[row].normal_vector.coordinates) == 0 and solution.planes[row].constant_term !=0:
-                print('No Solution!')
-            elif:
-                pass
-                print(solution + '\n')
-                print('Infinite Solutions!')
-            else:
-                print(solution)
+        pivot_variable_num = sum([1 if i >= 0 else 0 for i in indices])
+        # for row in solution.planes[::-1]:
+        # try:
+        #     row.first_nonzero_index(row.normal_vector.coordinates)
+        # except Exception as e:
+        #     if str(e) == 'No nonzero elements found':
+        #         constant_term = MyDecimal(row.constant_term)
+        #         if not constant_term.is_near_zero():
+        #             raise Exception(self.NO_SOLUTIONS_MSG)
+        #     else:
+        #         raise e
+
+        for row in solution.planes[::-1]:
+            if abs(sum(row.normal_vector.coordinates)) < esp and abs(row.constant_term) > esp:
+                return self.NO_SOLUTIONS_MSG
+            if pivot_variable_num < row.dimension:
+                print(self.INF_SOLUTIONS_MSG)
+                self.INF_SOLUTIONS = True
+                para = self.InfiniteSolutionParamterization(
+                    solution, row.dimension, pivot_variable_num, indices)
+                return para
+        print(solution)
         return solution
+
+    def InfiniteSolutionParamterization(self, rref, dimension, pivot_variable_num, indices):
+        if not self.INF_SOLUTIONS:
+            raise Exception('Not infinite solutions problem!')
+        else:
+            basepoint = [0] * dimension
+            for index, coe in enumerate(indices):
+                basepoint[coe] = rref.planes[index].constant_term
+            direction_vector_list = list()
+            for i in range(dimension):
+                try:
+                    indices.index(i)
+                except Exception as e:
+                    if str(e) == '{} is not in list'.format(i):
+                        dir_vec = [0] * dimension
+                        for row in range(min(len(indices), dimension)):
+                            dir_vec[row] = - \
+                                rref.planes[row].normal_vector.coordinates[i]
+                        dir_vec[i] = 1
+                        direction_vector_list.append(Vector(dir_vec))
+            para = Parameterization(Vector(basepoint), direction_vector_list)
+            return para
+
 
 class MyDecimal(Decimal):
 
@@ -131,44 +173,30 @@ class MyDecimal(Decimal):
         return abs(self) < eps
 
 if __name__ == '__main__':
-    p1 = Plane(normal_vector=Vector([1, 1, 1]), constant_term=1)
-    p2 = Plane(normal_vector=Vector([0, 1, 1]), constant_term=2)
+    p1 = Hyperplane(normal_vector=Vector([0.786, 0.786, 0.588]), constant_term=-0.714)
+    p2 = Hyperplane(normal_vector=Vector([-0.131, -0.131, 0.244]), constant_term=0.319)
     s = LinearSystem([p1, p2])
-    r = s.compute_rref()
+    r = s.GaussianEliminationSolution()
     print(r)
-    if not (r[0] == Plane(normal_vector=Vector([1, 0, 0]), constant_term=-1) and
-            r[1] == p2):
-        print('test case 1 failed')
 
-    p1 = Plane(normal_vector=Vector([1, 1, 1]), constant_term=1)
-    p2 = Plane(normal_vector=Vector([1, 1, 1]), constant_term=2)
-    s = LinearSystem([p1, p2])
-    r = s.compute_rref()
-    print(r)
-    if not (r[0] == p1 and
-            r[1] == Plane(constant_term=1)):
-        print('test case 2 failed')
-
-    p1 = Plane(normal_vector=Vector([1, 1, 1]), constant_term=1)
-    p2 = Plane(normal_vector=Vector([0, 1, 0]), constant_term=2)
-    p3 = Plane(normal_vector=Vector([1, 1, -1]), constant_term=3)
-    p4 = Plane(normal_vector=Vector([1, 0, -2]), constant_term=2)
-    s = LinearSystem([p1, p2, p3, p4])
-    r = s.compute_rref()
-    print(r)
-    if not (r[0] == Plane(normal_vector=Vector([1, 0, 0]), constant_term=0) and
-            r[1] == p2 and
-            r[2] == Plane(normal_vector=Vector([0, 0, -2]), constant_term=2) and
-            r[3] == Plane()):
-        print('test case 3 failed')
-
-    p1 = Plane(normal_vector=Vector([0, 1, 1]), constant_term=1)
-    p2 = Plane(normal_vector=Vector([1, -1, 1]), constant_term=2)
-    p3 = Plane(normal_vector=Vector([1, 2, -5]), constant_term=3)
+    p1 = Hyperplane(normal_vector=Vector([8.631, 5.112, -1.816]), constant_term=-5.113)
+    p2 = Hyperplane(normal_vector=Vector([4.315, 11.132, -5.27]), constant_term=-6.775)
+    p3 = Hyperplane(normal_vector=Vector([-2.158, 3.01, -1.727]), constant_term=-0.831)
     s = LinearSystem([p1, p2, p3])
-    r = s.compute_rref()
+    r = s.GaussianEliminationSolution()
     print(r)
-    if not (r[0] == Plane(normal_vector=Vector([1, 0, 0]), constant_term=Decimal(23) / Decimal(9)) and
-            r[1] == Plane(normal_vector=Vector([0, 1, 0]), constant_term=Decimal(7) / Decimal(9)) and
-            r[2] == Plane(normal_vector=Vector([0, 0, 1]), constant_term=Decimal(2) / Decimal(9))):
-        print('test case 4 failed')
+
+    p1 = Hyperplane(normal_vector=Vector([0.935, 1.76, -9.365]), constant_term=-9.955)
+    p2 = Hyperplane(normal_vector=Vector([0.187, 0.352, -1.873]), constant_term=-1.991)
+    p3 = Hyperplane(normal_vector=Vector([0.374, 0.704, -3.746]), constant_term=-3.982)
+    p4 = Hyperplane(normal_vector=Vector([-0.561, -1.056, 5.619]), constant_term=5.973)
+    s = LinearSystem([p1, p2, p3, p4])
+    r = s.GaussianEliminationSolution()
+    print(r)
+
+    p1 = Hyperplane(normal_vector=Vector([0.786, 0.786, 8.123, 1.111, -8.363]), constant_term=-5.113)
+    p2 = Hyperplane(normal_vector=Vector([-0.131, 0.131, 7.05, -2.813, 1.19]), constant_term=-6.775)
+    p3 = Hyperplane(normal_vector=Vector([9.015, -5.873, -1.105, 2.013, -2.802]), constant_term=-0.831)
+    s = LinearSystem([p1, p2, p3])
+    r = s.GaussianEliminationSolution()
+    print(r)

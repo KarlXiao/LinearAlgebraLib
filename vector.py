@@ -124,7 +124,7 @@ class Vector(object):
                 v_embedded_in_threeDimension = Vector(v.coordinates + ('0',))
                 return self_embedded_in_threeDimension.cross_product(v_embedded_in_threeDimension)
             elif(msg == 'too many values to unpack' or msg == 'need more than 1 value to unpack'):
-                raise Exception(self.ONLY_DEFINED_IN_TWO_THREE_DIMS_MSG)
+                raise Exception("Cross product only defined in tow three dimensions vectors!")
             else:
                 raise e
 

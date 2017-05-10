@@ -5,16 +5,20 @@ from vector import Vector
 getcontext().prec = 30
 
 
-class Plane(object):
+class Hyperplane(object):
 
     NO_NONZERO_ELTS_FOUND_MSG = 'No nonzero elements found'
+    EITHER_DIM_OR_NORMAL_VEC_MUST_BE_PROVIDE_MSG = 'Either the dimension or the normal vector must be provided'
 
-    def __init__(self, normal_vector=None, constant_term=None):
-        self.dimension = 3
-
-        if not normal_vector:
+    def __init__(self, dimension=None, normal_vector=None, constant_term=None):
+        if not dimension and not normal_vector:
+            raise Exception(self.EITHER_DIM_OR_NORMAL_VEC_MUST_BE_PROVIDE_MSG)
+        elif not normal_vector:
+            self.dimension = dimension
             all_zeros = [0] * self.dimension
             normal_vector = Vector(all_zeros)
+        else:
+            self.dimension = normal_vector.dimension
         self.normal_vector = normal_vector
 
         if not constant_term:
@@ -91,7 +95,7 @@ class Plane(object):
         for k, item in enumerate(iterable):
             if not MyDecimal(item).is_near_zero():
                 return k
-        raise Exception(Plane.NO_NONZERO_ELTS_FOUND_MSG)
+        raise Exception(Hyperplane.NO_NONZERO_ELTS_FOUND_MSG)
 
     def is_paralle_to(self, p):
         return self.normal_vector.is_parallel_to(p.normal_vector)
