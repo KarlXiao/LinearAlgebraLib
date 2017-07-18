@@ -112,11 +112,11 @@ class Hyperplane(object):
 
 class MyDecimal(Decimal):
 
-    def is_near_zero(self, eps=1e-10):
+    def is_near_zero(self, eps=1e-30):
         return abs(self) < eps
 
 if __name__ == '__main__':
-    p1 = Plane(Vector([-7.926, 8.625, -7.212]), -7.952)
-    p2 = Plane(Vector([-2.642, 2.875, -2.404]), -2.443)
+    p1 = Hyperplane(Vector([-7.926, 8.625, -7.212]), -7.952)
+    p2 = Hyperplane(Vector([-2.642, 2.875, -2.404]), -2.443)
     print(p2 == p1)
     print(p1.is_paralle_to(p2))

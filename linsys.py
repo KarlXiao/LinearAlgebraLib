@@ -33,7 +33,8 @@ class LinearSystem(object):
     def multiply_coefficient_and_row(self, coefficient, row):
         constant_term = self.planes[row].constant_term * coefficient
         normal_vector = self.planes[row].normal_vector * coefficient
-        self.planes[row] = Plane(normal_vector, constant_term)
+        self.planes[row] = self.planes[row].__class__(
+            normal_vector=normal_vector, constant_term=constant_term)
 
     def add_multiple_times_row_to_row(self, coefficient, row_to_add, row_to_be_added_to):
         self.planes[
@@ -141,7 +142,7 @@ class LinearSystem(object):
                 para = self.InfiniteSolutionParamterization(
                     solution, row.dimension, pivot_variable_num, indices)
                 return para
-        print(solution)
+        # print(solution)
         return solution
 
     def InfiniteSolutionParamterization(self, rref, dimension, pivot_variable_num, indices):
@@ -172,31 +173,71 @@ class MyDecimal(Decimal):
     def is_near_zero(self, eps=1e-10):
         return abs(self) < eps
 
+
 if __name__ == '__main__':
-    p1 = Hyperplane(normal_vector=Vector([0.786, 0.786, 0.588]), constant_term=-0.714)
-    p2 = Hyperplane(normal_vector=Vector([-0.131, -0.131, 0.244]), constant_term=0.319)
-    s = LinearSystem([p1, p2])
-    r = s.GaussianEliminationSolution()
-    print(r)
+    # p1 = Hyperplane(normal_vector=Vector([0.786, 0.786, 0.588]), constant_term=-0.714)
+    # p2 = Hyperplane(normal_vector=Vector([-0.131, -0.131, 0.244]), constant_term=0.319)
+    # s = LinearSystem([p1, p2])
+    # r = s.GaussianEliminationSolution()
+    # print(r)
 
-    p1 = Hyperplane(normal_vector=Vector([8.631, 5.112, -1.816]), constant_term=-5.113)
-    p2 = Hyperplane(normal_vector=Vector([4.315, 11.132, -5.27]), constant_term=-6.775)
-    p3 = Hyperplane(normal_vector=Vector([-2.158, 3.01, -1.727]), constant_term=-0.831)
-    s = LinearSystem([p1, p2, p3])
-    r = s.GaussianEliminationSolution()
-    print(r)
+    # p1 = Hyperplane(normal_vector=Vector([8.631, 5.112, -1.816]), constant_term=-5.113)
+    # p2 = Hyperplane(normal_vector=Vector([4.315, 11.132, -5.27]), constant_term=-6.775)
+    # p3 = Hyperplane(normal_vector=Vector([-2.158, 3.01, -1.727]), constant_term=-0.831)
+    # s = LinearSystem([p1, p2, p3])
+    # r = s.GaussianEliminationSolution()
+    # print(r)
 
-    p1 = Hyperplane(normal_vector=Vector([0.935, 1.76, -9.365]), constant_term=-9.955)
-    p2 = Hyperplane(normal_vector=Vector([0.187, 0.352, -1.873]), constant_term=-1.991)
-    p3 = Hyperplane(normal_vector=Vector([0.374, 0.704, -3.746]), constant_term=-3.982)
-    p4 = Hyperplane(normal_vector=Vector([-0.561, -1.056, 5.619]), constant_term=5.973)
+    # p1 = Hyperplane(normal_vector=Vector([0.935, 1.76, -9.365]), constant_term=-9.955)
+    # p2 = Hyperplane(normal_vector=Vector([0.187, 0.352, -1.873]), constant_term=-1.991)
+    # p3 = Hyperplane(normal_vector=Vector([0.374, 0.704, -3.746]), constant_term=-3.982)
+    # p4 = Hyperplane(normal_vector=Vector([-0.561, -1.056, 5.619]), constant_term=5.973)
+    # s = LinearSystem([p1, p2, p3, p4])
+    # r = s.GaussianEliminationSolution()
+    # print(r)
+
+    # p1 = Hyperplane(normal_vector=Vector([0.786, 0.786, 8.123, 1.111, -8.363]), constant_term=-5.113)
+    # p2 = Hyperplane(normal_vector=Vector([-0.131, 0.131, 7.05, -2.813, 1.19]), constant_term=-6.775)
+    # p3 = Hyperplane(normal_vector=Vector([9.015, -5.873, -1.105, 2.013, -2.802]), constant_term=-0.831)
+    # s = LinearSystem([p1, p2, p3])
+    # r = s.GaussianEliminationSolution()
+    # print(r)
+
+    p1 = Hyperplane(normal_vector=Vector(
+        [2.59892059451973e-10, 4.07250857161242e-07, 0.000638162093171666]), constant_term=53.2951176000000-1)
+    p2 = Hyperplane(normal_vector=Vector(
+        [2.07913647561578e-09, 1.62900342864497e-06, 0.00127632418634333]), constant_term=54.0022243800000-1)
+    p3 = Hyperplane(normal_vector=Vector(
+        [7.01708560520327e-09, 3.66525771445118e-06, 0.00191448627951500]), constant_term=54.7093311600000-1)
+    p4 = Hyperplane(normal_vector=Vector(
+        [1.66330918049263e-08, 6.51601371457987e-06, 0.00255264837268666]), constant_term=55.4164379400000-1)
     s = LinearSystem([p1, p2, p3, p4])
     r = s.GaussianEliminationSolution()
+    print('Three Degree:')
     print(r)
 
-    p1 = Hyperplane(normal_vector=Vector([0.786, 0.786, 8.123, 1.111, -8.363]), constant_term=-5.113)
-    p2 = Hyperplane(normal_vector=Vector([-0.131, 0.131, 7.05, -2.813, 1.19]), constant_term=-6.775)
-    p3 = Hyperplane(normal_vector=Vector([9.015, -5.873, -1.105, 2.013, -2.802]), constant_term=-0.831)
-    s = LinearSystem([p1, p2, p3])
+    p1 = Hyperplane(normal_vector=Vector(
+        [1.65853260658566e-13, 2.59892059451973e-10, 4.07250857161242e-07, 0.000638162093171666]), constant_term=53.2951176000000-1)
+    p2 = Hyperplane(normal_vector=Vector(
+        [2.65365217053706e-12, 2.07913647561578e-09, 1.62900342864497e-06, 0.00127632418634333]), constant_term=54.0022243800000-1)
+    p3 = Hyperplane(normal_vector=Vector(
+        [1.34341141133439e-11, 7.01708560520327e-09, 3.66525771445118e-06, 0.00191448627951500]), constant_term=54.7093311600000-1)
+    p4 = Hyperplane(normal_vector=Vector(
+        [4.24584347285929e-11, 1.66330918049263e-08, 6.51601371457987e-06, 0.00255264837268666]), constant_term=55.4164379400000-1)
+    p5 = Hyperplane(normal_vector=Vector(
+        [1.03658287911604e-10, 3.24865074314966e-08, 1.01812714290310e-05, 0.00319081046585833]), constant_term=56.1235447300000-1)
+    s = LinearSystem([p1, p2, p3, p4, p5])
     r = s.GaussianEliminationSolution()
+    print('Four Degree:')
+    print(r)
+
+    p1 = Hyperplane(normal_vector=Vector([1.05841263981216e-16, 1.65853260658566e-13, 2.59892059451973e-10, 4.07250857161242e-07, 0.000638162093171666]), constant_term=53.2951176000000-1)
+    p2 = Hyperplane(normal_vector=Vector([3.38692044739892e-15, 2.65365217053706e-12, 2.07913647561578e-09, 1.62900342864497e-06, 0.00127632418634333]), constant_term=54.0022243800000-1)
+    p3 = Hyperplane(normal_vector=Vector([2.57194271474356e-14, 1.34341141133439e-11, 7.01708560520327e-09, 3.66525771445118e-06, 0.00191448627951500]), constant_term=54.7093311600000-1)
+    p4 = Hyperplane(normal_vector=Vector([1.08381454316766e-13, 4.24584347285929e-11, 1.66330918049263e-08, 6.51601371457987e-06, 0.00255264837268666]), constant_term=55.4164379400000-1)
+    p5 = Hyperplane(normal_vector=Vector([3.30753949941301e-13, 1.03658287911604e-10, 3.24865074314966e-08, 1.01812714290310e-05, 0.00319081046585833]), constant_term=56.1235447300000-1)
+    p6 = Hyperplane(normal_vector=Vector([8.23021668717939e-13, 2.14945825813502e-10, 5.61366848416262e-08, 1.46610308578047e-05, 0.00382897255902999]), constant_term=56.8306515100000-1)
+    s = LinearSystem([p1, p2, p3, p4, p5, p6])
+    r = s.GaussianEliminationSolution()
+    print('Five Degree:')
     print(r)

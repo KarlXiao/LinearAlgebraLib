@@ -108,7 +108,7 @@ class Plane(object):
 
 class MyDecimal(Decimal):
 
-    def is_near_zero(self, eps=1e-10):
+    def is_near_zero(self, eps=1e-30):
         return abs(self) < eps
 
 if __name__ == '__main__':
