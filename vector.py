@@ -36,7 +36,7 @@ class Vector(object):
             print('Two vectors must have the same dimensions!')
 
     def __sub__(self, v):
-        ''' calculate vector a plus minus b'''
+        ''' calculate vector a minus vector b'''
         if self.dimension == v.dimension:
             out = [x - y for x, y in zip(self.coordinates, v.coordinates)]
             return self.__class__(out)
@@ -44,6 +44,11 @@ class Vector(object):
             print('Two vectors must have the same dimensions!')
 
     def __mul__(self, scalar):
+        '''scalling vectors'''
+        out = [x * Decimal(scalar) for x in self.coordinates]
+        return self.__class__(out)
+
+    def __rmul__(self, scalar):
         '''scalling vectors'''
         out = [x * Decimal(scalar) for x in self.coordinates]
         return self.__class__(out)
@@ -185,3 +190,7 @@ if __name__ == '__main__':
     v16 = Vector([1.5, 9.547, 3.691])
     v17 = Vector([-6.007, 0.124, 5.772])
     print(v16.triangle_spanned_with(v17))
+
+    v18 = Vector([1.671, -1.012, -.318])
+    a = 7.41
+    print('Scalling:', a * v18)
